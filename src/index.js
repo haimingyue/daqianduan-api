@@ -36,7 +36,11 @@ if (!isDevMode) {
   app.use(compress())
 }
 
+let port = !isDevMode ? 12005 : 3000
+
 app.use(middleware)
 app.use(router())
 
-app.listen(3000)
+app.listen(port, () => {
+  console.log('服务运行在：' + port)
+})
