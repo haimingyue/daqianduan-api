@@ -35,6 +35,9 @@ client.on('error', (err) => {
 })
 
 const setValue = (key, value, time) => {
+  console.log('key', key)
+  console.log('value', value)
+  console.log('time', time)
   if (typeof value === 'undefined' || value == null || value === '') {
     return
   }
