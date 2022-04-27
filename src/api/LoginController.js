@@ -40,18 +40,31 @@ class LoginController {
       // 验证用户账号密码是否正确
       let checkUserPasswd = false
       const user = await User.findOne({ username: body.username })
+      if (user == null) {
+        ctx.body = {
+          code: 404,
+          msg: '用户名或密码错误'
+        }
+        return
+      }
       if (await bcrypt.compare(body.password, user.password)) {
         checkUserPasswd = true
       }
       // mongoDB查库
       if (checkUserPasswd) {
+        const userObj = user.toJSON()
+        const arr = ['password', 'username', 'roles']
+        arr.forEach((item) => {
+          delete userObj[item]
+        })
+
         // 验证通过，返回Token数据
-        console.log('Hello login')
         const token = jsonwebtoken.sign({ _id: 'brian' }, config.JWT_SECRET, {
           expiresIn: '1d'
         })
         ctx.body = {
           code: 200,
+          data: userObj,
           token: token
         }
       } else {
