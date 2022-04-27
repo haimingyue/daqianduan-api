@@ -1,4 +1,5 @@
 import mongoose from '@/config/DBHelper'
+import moment from 'dayjs'
 const Schema = mongoose.Schema
 
 const PostSchema = new Schema({
@@ -30,6 +31,19 @@ PostSchema.statics = {
       .sort({ [sort]: -1 })
       .skip(page * limit)
       .limit(limit)
+  },
+
+  getTopWeek: function () {
+    return this.find({
+      created: {
+        $gte: moment().subtract(7, 'days')
+      }
+    }, {
+      answer: 1,
+      title: 1
+    }).sort({
+      answer: -1
+    }).limit(15)
   }
 }
 
