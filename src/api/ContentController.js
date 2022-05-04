@@ -6,26 +6,6 @@ class ContentController {
   async getPostList (ctx) {
     const body = ctx.query
 
-    // 测试数据
-    // const post = new Post({
-    //   title: 'test title1',
-    //   content: 'test content 1',
-    //   catalog: 'advise',
-    //   fav: 20,
-    //   isEnd: '0',
-    //   reads: '0',
-    //   answer: '0',
-    //   status: '0',
-    //   isTop: '0',
-    //   sort: '0',
-    //   tags: [{
-    //     name: '精华',
-    //     class: ''
-    //   }]
-    // })
-    // const tmp = await post.save()
-    // console.log('TCL: ContentController -> getPostList -> tmp', tmp)
-
     const sort = body.sort ? body.sort : 'created'
     const page = body.page ? parseInt(body.page) : 0
     const limit = body.limit ? parseInt(body.limit) : 20
@@ -37,13 +17,10 @@ class ContentController {
     if (typeof body.isTop !== 'undefined') {
       options.isTop = body.isTop
     }
-    if (typeof body.status !== 'undefined') {
-      options.status = body.status
-    }
-    if (typeof body.status !== 'undefined') {
+    if (typeof body.status !== 'undefined' && body.status !== '') {
       options.isEnd = body.status
     }
-    if (typeof body.tag !== 'undefined') {
+    if (typeof body.tag !== 'undefined' && body.tag !== '') {
       options.tags = { $elemMatch: { name: body.tag } }
     }
     console.log('getList', Post.getList)

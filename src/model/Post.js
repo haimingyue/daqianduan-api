@@ -3,7 +3,7 @@ import moment from 'dayjs'
 const Schema = mongoose.Schema
 
 const PostSchema = new Schema({
-  uid: { type: String },
+  uid: { type: String, ref: 'users' },
   title: { type: String },
   content: { type: String },
   created: { type: Date },
@@ -15,7 +15,20 @@ const PostSchema = new Schema({
   status: { type: String },
   isTop: { type: String },
   sort: { type: String },
-  tags: { type: Array }
+  tags: {
+    type: Array,
+    default: [
+      {
+        name: '',
+        class: ''
+      }
+    ]
+  }
+})
+
+PostSchema.pre('save', function (next) {
+  this.created = moment().format('YYYY-MM-DD HH:mm:ss')
+  next()
 })
 
 PostSchema.statics = {
@@ -27,10 +40,15 @@ PostSchema.statics = {
    * @param {Number} limit 分页条数
    */
   getList: function (options, sort, page, limit) {
+    console.log(options)
     return this.find(options)
       .sort({ [sort]: -1 })
       .skip(page * limit)
       .limit(limit)
+      .populate({
+        path: 'uid',
+        select: 'name isVip pic'
+      })
   },
 
   getTopWeek: function () {

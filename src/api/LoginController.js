@@ -1,10 +1,11 @@
 import send from '@/config/MailConfig'
 import bcrypt from 'bcrypt'
-import moment from 'moment'
+import moment from 'dayjs'
 import jsonwebtoken from 'jsonwebtoken'
 import config from '@/config'
 import { checkCode } from '@/common/Utils'
 import User from '@/model/User'
+import SignRecord from '../model/SignRecord'
 
 class LoginController {
   async forget (ctx) {
@@ -59,9 +60,22 @@ class LoginController {
         })
 
         // 验证通过，返回Token数据
-        const token = jsonwebtoken.sign({ _id: 'brian' }, config.JWT_SECRET, {
+        const token = jsonwebtoken.sign({ _id: userObj._id }, config.JWT_SECRET, {
           expiresIn: '1d'
         })
+        // 加入isSign属性
+        const signRecord = await SignRecord.findByUid(userObj._id)
+        if (signRecord != null) {
+          if (moment(signRecord.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) {
+            userObj.isSign = true
+          } else {
+            userObj.isSign = false
+          }
+          userObj.lastSign = signRecord.created
+        } else {
+          // 用户无签到记录
+          userObj.isSign = false
+        }
         ctx.body = {
           code: 200,
           data: userObj,
