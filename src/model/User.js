@@ -42,7 +42,6 @@ UserSchema.statics = {
   findByID: function (id) {
     return this.findOne({ _id: id }, {
       password: 0,
-      username: 0,
       mobile: 0
     })
   }

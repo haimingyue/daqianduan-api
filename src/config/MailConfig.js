@@ -1,7 +1,9 @@
 import nodemailer from 'nodemailer'
+import config from '@/config'
 
 // async..await is not allowed in global scope, must use a wrapper
 async function send (sendInfo) {
+  console.log('sendInfo', sendInfo)
   // Generate test SMTP service account from ethereal.email
   // Only needed if you don't have a real mail account for testing
   // let testAccount = await nodemailer.createTestAccount()
@@ -24,16 +26,17 @@ async function send (sendInfo) {
   //   user: 'Brian',
   // }
 
-  const url = 'http://www.imooc.com'
-
+  const baseUrl = config.baseUrl
+  const route = sendInfo.type === 'email' ? '/login/email' : '/login/reset'
+  const url = `${baseUrl}/#${route}?key=${sendInfo.key}`
   // send mail with defined transport object
   const info = await transporter.sendMail({
     from: '"认证邮件" <420526391@qq.com>', // sender address
     to: sendInfo.email, // list of receivers
     subject:
-      sendInfo.user !== ''
+      sendInfo.user !== '' && sendInfo.type !== 'email'
         ? `你好开发者，${sendInfo.user}！《慕课网前端全栈实践》注册码`
-        : '《慕课网前端全栈实践》注册码', // Subject line
+        : '《慕课网前端全栈实践》确认修改邮件链接', // Subject line
     text: `您在《慕课网前端全栈实践》课程中注册，您的邀请码是${sendInfo.code
       },邀请码的过期时间: ${sendInfo.expire}`, // plain text body
     html: `
